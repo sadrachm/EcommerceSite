@@ -16,6 +16,10 @@ public class EcommerceController {
     @Autowired
     EcommerceService ecommerceService;
 
+    public EcommerceController(EcommerceService service) {
+        this.ecommerceService = service;
+    }
+
     @PostMapping("/user")
     EcommerceUser postUser(@RequestBody EcommerceUser userInfo) throws InvalidInputException {
         return ecommerceService.postUser(userInfo);

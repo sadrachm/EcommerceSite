@@ -88,7 +88,24 @@ class EcommerceApplicationTests {
 //		List<EcommerceUser> users = Arrays.asList(
 //				new EcommerceUser((long) 1, "Daenerys Targaryen", "asd", temp),
 //				new EcommerceUser((long) 2, "John Snow", "asd", temp));
-//		when(service.getAllUsers()).thenReturn(users);
+//		when(service.getAllUsers()).thenReturn(users)	@Test
+////	public void test_get_all_success() throws Exception {
+////		ArrayList temp = new ArrayList();
+////		List<EcommerceUser> users = Arrays.asList(
+////				new EcommerceUser((long) 1, "Daenerys Targaryen", "asd", temp),
+////				new EcommerceUser((long) 2, "John Snow", "asd", temp));
+////		when(service.getAllUsers()).thenReturn(users);
+////		mvc.perform(get("/users"))
+////				.andExpect(status().isOk())
+////				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+////				.andExpect(jsonPath("$", hasSize(2)))
+////				.andExpect(jsonPath("$[0].id", is(1)))
+////				.andExpect(jsonPath("$[0].username", is("Daenerys Targaryen")))
+////				.andExpect(jsonPath("$[1].id", is(2)))
+////				.andExpect(jsonPath("$[1].username", is("John Snow")));
+////		verify(service, times(1)).getAll();
+////		verifyNoMoreInteractions(service);
+////	};
 //		mvc.perform(get("/users"))
 //				.andExpect(status().isOk())
 //				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
