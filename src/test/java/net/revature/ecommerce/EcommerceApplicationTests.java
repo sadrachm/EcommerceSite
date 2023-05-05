@@ -1,5 +1,6 @@
 package net.revature.ecommerce;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.revature.ecommerce.controller.EcommerceController;
 import net.revature.ecommerce.dao.EcommerceDAOInterface;
 import net.revature.ecommerce.dao.ProductRepo;
@@ -16,6 +17,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
@@ -28,10 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class EcommerceApplicationTests {
+	@Autowired
 	private MockMvc mvc;
 	@Mock
 	EcommerceService service;
@@ -52,6 +58,42 @@ class EcommerceApplicationTests {
 				.addFilters(new CorsFilter())
 				.build();
 	}
+	@Test
+	void GetAllUser() throws Exception {
+		this.createEmployee("Bobby","password");
+		mvc.perform(MockMvcRequestBuilders
+			.get("/user")
+			.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(3))
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].username").value("Bobby"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].password").value("password"));
+	}
+	public static String asJsonString(final Object obj) {
+		try {
+			final ObjectMapper mapper = new ObjectMapper();
+			final String jsonContent = mapper.writeValueAsString(obj);
+			return jsonContent;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	@Test
+	void registerUser() throws Exception {
+		mvc.perform(MockMvcRequestBuilders
+				.post("/user")
+				.content(asJsonString(new EcommerceUser((long) 1,"bob", "password", new ArrayList<>())))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.username").value("bob"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"));;
+
+	}
+
 
 	@Test
 	void contextLoads() {
@@ -71,7 +113,7 @@ class EcommerceApplicationTests {
 	@Test
 	public void createEmployeeAndCheck() {
 		this.createEmployee("Bob", "password");
-		EcommerceUser user = serviceTest.getUser((long) 1);
+		EcommerceUser user = serviceTest.getUser((long) 2);
 		assertNotEquals(user.getUsername(), "Bobby");
 		assertEquals(user.getUsername(), "Bob");
 	}
