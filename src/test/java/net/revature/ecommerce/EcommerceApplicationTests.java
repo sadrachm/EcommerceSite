@@ -39,8 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EcommerceApplicationTests {
 	@Autowired
 	private MockMvc mvc;
-	@Mock
-	EcommerceService service;
 	@InjectMocks
 	EcommerceController controller;
 
@@ -58,18 +56,7 @@ class EcommerceApplicationTests {
 				.addFilters(new CorsFilter())
 				.build();
 	}
-	@Test
-	void GetAllUser() throws Exception {
-		this.createEmployee("Bobby","password");
-		mvc.perform(MockMvcRequestBuilders
-			.get("/user")
-			.accept(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(3))
-			.andExpect(MockMvcResultMatchers.jsonPath("$[2].username").value("Bobby"))
-			.andExpect(MockMvcResultMatchers.jsonPath("$[2].password").value("password"));
-	}
+
 	public static String asJsonString(final Object obj) {
 		try {
 			final ObjectMapper mapper = new ObjectMapper();
@@ -80,20 +67,57 @@ class EcommerceApplicationTests {
 		}
 	}
 	@Test
+	void GetAllUser() throws Exception {
+		this.createEmployee("Bobby","password");
+		mvc.perform(MockMvcRequestBuilders
+			.get("/user")
+			.accept(MediaType.APPLICATION_JSON))
+//			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(3))
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].username").value("Bobby"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$[2].password").value("password"));
+	}
+	@Test
 	void registerUser() throws Exception {
 		mvc.perform(MockMvcRequestBuilders
 				.post("/user")
 				.content(asJsonString(new EcommerceUser((long) 1,"bob", "password", new ArrayList<>())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andDo(print())
+//				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.username").value("bob"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"));;
+				.andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"));
+	}
+	@Test
+	void registerProduct() throws Exception {
+		mvc.perform(MockMvcRequestBuilders
+				.post("/product")
+				.content(asJsonString(new EcommerceProduct((long)1, "Shirt","12.99")))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+//				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.product").value("Shirt"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.price").value("12.99"));
+
+
 
 	}
-
+	@Test
+	void addToCart() throws Exception {
+		mvc.perform(MockMvcRequestBuilders
+				.post("/cart/1")
+				.content(asJsonString(new EcommerceProduct((long) 1, "", "")))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+//				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.products").isNotEmpty());
+	}
 
 	@Test
 	void contextLoads() {
@@ -111,54 +135,17 @@ class EcommerceApplicationTests {
 		productRepo.save(product);
 	}
 	@Test
-	public void createEmployeeAndCheck() {
+	public void serviceCreateEmployeeAndCheck() {
 		this.createEmployee("Bob", "password");
 		EcommerceUser user = serviceTest.getUser((long) 2);
 		assertNotEquals(user.getUsername(), "Bobby");
 		assertEquals(user.getUsername(), "Bob");
 	}
 	@Test
-	public void createProductAndCheck() {
+	public void serviceCreateProductAndCheck() {
 		this.createProduct("Soap","12.99");
 		EcommerceProduct product = serviceTest.getProduct((long) 1);
 		assertEquals(product.getProduct(), "Soap");
 		assertEquals(product.getPrice(), "12.99");
 	}
-//	@Test
-//	public void test_get_all_success() throws Exception {
-//		ArrayList temp = new ArrayList();
-//		List<EcommerceUser> users = Arrays.asList(
-//				new EcommerceUser((long) 1, "Daenerys Targaryen", "asd", temp),
-//				new EcommerceUser((long) 2, "John Snow", "asd", temp));
-//		when(service.getAllUsers()).thenReturn(users)	@Test
-////	public void test_get_all_success() throws Exception {
-////		ArrayList temp = new ArrayList();
-////		List<EcommerceUser> users = Arrays.asList(
-////				new EcommerceUser((long) 1, "Daenerys Targaryen", "asd", temp),
-////				new EcommerceUser((long) 2, "John Snow", "asd", temp));
-////		when(service.getAllUsers()).thenReturn(users);
-////		mvc.perform(get("/users"))
-////				.andExpect(status().isOk())
-////				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-////				.andExpect(jsonPath("$", hasSize(2)))
-////				.andExpect(jsonPath("$[0].id", is(1)))
-////				.andExpect(jsonPath("$[0].username", is("Daenerys Targaryen")))
-////				.andExpect(jsonPath("$[1].id", is(2)))
-////				.andExpect(jsonPath("$[1].username", is("John Snow")));
-////		verify(service, times(1)).getAll();
-////		verifyNoMoreInteractions(service);
-////	};
-//		mvc.perform(get("/users"))
-//				.andExpect(status().isOk())
-//				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-//				.andExpect(jsonPath("$", hasSize(2)))
-//				.andExpect(jsonPath("$[0].id", is(1)))
-//				.andExpect(jsonPath("$[0].username", is("Daenerys Targaryen")))
-//				.andExpect(jsonPath("$[1].id", is(2)))
-//				.andExpect(jsonPath("$[1].username", is("John Snow")));
-//		verify(service, times(1)).getAll();
-//		verifyNoMoreInteractions(service);
-//	}
-
-
 }

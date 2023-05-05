@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.revature.ecommerce.controller.EcommerceController;
 import net.revature.ecommerce.exceptions.InvalidInputException;
+import net.revature.ecommerce.model.EcommerceProduct;
 import net.revature.ecommerce.model.EcommerceUser;
 import net.revature.ecommerce.service.EcommerceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,19 +40,31 @@ public class MockTests {
     @Autowired
     ObjectMapper objectMapper;
     private EcommerceUser user;
+    private EcommerceProduct product;
     @BeforeEach
     public void init() {
-        user = new EcommerceUser((long)1,"Bob", "Bob", new ArrayList<>());
+        user = new EcommerceUser((long)1,"Bob", "password", new ArrayList<>());
+        product = new EcommerceProduct((long)1, "Brocolli", "15.00");
     }
 
     @Test
     public void CreateUser_ReturnUser() throws Exception {
-//        given(service.postUser(user)).willReturn(user);
-//        given(service.postUser(user)).willReturn(user);
-//        service.postUser();
-//        EcommerceUser userCopy = service.getUser((long)1);
-
-//        assertEquals(user, userCopy);
+        given(service.postUser(user)).willReturn(user);
+        given(service.postUser(user)).willReturn(user);
+    }
+    @Test
+    public void CreateProduct_ReturnProduct() throws Exception {
+        given(service.postProduct(product)).willReturn(product);
+    }
+    @Test
+    public  void AddToCart() throws InvalidInputException {
+        given(service.addToCart((long)1, (long) 1)).willThrow(InvalidInputException.class);
+//        service.postProduct(product);
+//        service.postUser(user);
+//        ArrayList<EcommerceProduct> e = new ArrayList<>();
+//        e.add(product);
+//        EcommerceUser ans = service.addToCart((long)1, (long) 1);
+//        assertEquals(ans, new EcommerceUser((long)1, "Bob","password", e));
     }
 
 
