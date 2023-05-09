@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EcommerceDAOInterface extends JpaRepository<EcommerceUser, Long> {
+    EcommerceUser findByUsername(String username);
+
 }

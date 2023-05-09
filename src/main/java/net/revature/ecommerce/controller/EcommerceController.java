@@ -2,6 +2,7 @@ package net.revature.ecommerce.controller;
 
 import net.revature.ecommerce.exceptions.EcommerceExceptionAdvice;
 import net.revature.ecommerce.exceptions.InvalidInputException;
+import net.revature.ecommerce.exceptions.UserNotFoundException;
 import net.revature.ecommerce.model.EcommerceProduct;
 import net.revature.ecommerce.model.EcommerceUser;
 import net.revature.ecommerce.service.EcommerceService;
@@ -28,6 +29,14 @@ public class EcommerceController {
     List<EcommerceUser> getAllUsers() {
         return ecommerceService.getAllUsers();
     }
+    @PostMapping("/login")
+    EcommerceUser login(@RequestBody EcommerceUser userInfo) throws UserNotFoundException, InvalidInputException {
+        return ecommerceService.login(userInfo);
+    }
+    @GetMapping("/user/{userId}")
+    EcommerceUser getUser(@PathVariable long userId) {
+        return ecommerceService.getUser(userId);
+    }
 
     @PostMapping("/product")
     EcommerceProduct postProduct(@RequestBody EcommerceProduct product) throws InvalidInputException {
@@ -41,10 +50,6 @@ public class EcommerceController {
     EcommerceUser addToCart(@PathVariable long userId, @RequestBody EcommerceProduct product ) throws InvalidInputException{
         return ecommerceService.addToCart(userId, product.getId());
     }
-//    @ExceptionHandler(EcommerceExceptionAdvice.class)
-//    String catchError(EcommerceExceptionAdvice e) {
-//        return e.getMessage();
-//    }
 
 
 }
