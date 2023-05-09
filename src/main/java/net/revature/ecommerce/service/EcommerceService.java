@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class EcommerceService {
     @Autowired
@@ -52,6 +54,9 @@ public class EcommerceService {
     public EcommerceProduct postProduct(EcommerceProduct product) throws InvalidInputException {
         if (product.getProduct() == null || product.getPrice() == null)
             throw new InvalidInputException("Your product is missing a name or price");
+        if (productRepo.findByProduct(product.getProduct()) != null) {
+            throw new InvalidInputException("Product name already taken");
+        }
         return productRepo.save(product);
     }
     public EcommerceProduct getProduct(Long id) {
@@ -60,16 +65,37 @@ public class EcommerceService {
 
     // Actions that use both
     public EcommerceUser addToCart(long userId, long productId) throws InvalidInputException {
-        try {
-            EcommerceUser user = userRepo.findById(userId).orElse(null);
-            EcommerceProduct product = productRepo.findById(productId).orElse(null);
-            if (user == null || product == null) throw new Exception();
-            List<EcommerceProduct> products = user.getProducts();
-            products.add(product);
-            return userRepo.save(user);
-        } catch(Exception e) {
+        EcommerceUser user = userRepo.findById(userId).orElse(null);
+        EcommerceProduct product = productRepo.findById(productId).orElse(null);
+        if (user == null || product == null)
             throw new InvalidInputException("Your product or user does not exist");
+        List<EcommerceProduct> products = user.getProducts();
+        for (EcommerceProduct prod : products) {
+            if (prod.getProduct().equals(product.getProduct())) {
+                prod.setQuantity(prod.getQuantity()+1);
+                return userRepo.save(user);
+            }
         }
+        product.setQuantity(1);
+        products.add(product);
+        return userRepo.save(user);
+    }
+    public EcommerceUser removeFromCart(long userId, long productId) throws InvalidInputException{
+        EcommerceUser user = userRepo.findById(userId).orElse(null);
+        EcommerceProduct product = productRepo.findById(productId).orElse(null);
+        if (user==null || product==null) {
+            throw new InvalidInputException("Invalid input for User = " + user.toString() + "And product = " +product.toString());
+        }
+        user.setProducts(user.getProducts().stream().filter(n -> n.getId()==productId).collect(Collectors.toList()));
+        return userRepo.save(user);
+    }
+    public EcommerceUser purchase(long userId) throws UserNotFoundException {
+        EcommerceUser user = userRepo.findById(userId).orElse(null);
+        if (user == null) {
+            throw new UserNotFoundException("User not Found");
+        }
+        user.setProducts(new ArrayList<>());
+        return userRepo.save(user);
     }
 
 }

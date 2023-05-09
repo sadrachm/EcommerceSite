@@ -95,7 +95,7 @@ class EcommerceApplicationTests {
 	void registerProduct() throws Exception {
 		mvc.perform(MockMvcRequestBuilders
 				.post("/product")
-				.content(asJsonString(new EcommerceProduct((long)1, "Shirt","12.99")))
+				.content(asJsonString(new EcommerceProduct((long)1, "Shirt","12.99", 1)))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 //				.andDo(print())
@@ -111,7 +111,7 @@ class EcommerceApplicationTests {
 	void addToCart() throws Exception {
 		mvc.perform(MockMvcRequestBuilders
 				.post("/cart/1")
-				.content(asJsonString(new EcommerceProduct((long) 1, "", "")))
+				.content(asJsonString(new EcommerceProduct((long) 1, "", "", 1)))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 //				.andDo(print())
