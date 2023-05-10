@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.revature.ecommerce.controller.EcommerceController;
 import net.revature.ecommerce.dao.EcommerceDAOInterface;
 import net.revature.ecommerce.dao.ProductRepo;
+import net.revature.ecommerce.exceptions.InvalidInputException;
+import net.revature.ecommerce.exceptions.UserNotFoundException;
 import net.revature.ecommerce.model.EcommerceProduct;
 import net.revature.ecommerce.model.EcommerceUser;
 import net.revature.ecommerce.service.EcommerceService;
 import org.apache.catalina.filters.CorsFilter;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -47,6 +50,7 @@ class EcommerceApplicationTests {
 	@Autowired
 	private ProductRepo productRepo;
 
+
 	@Autowired
 	private EcommerceService serviceTest;
 	public void init(){
@@ -66,6 +70,8 @@ class EcommerceApplicationTests {
 			throw new RuntimeException(e);
 		}
 	}
+
+
 	@Test
 	void GetAllUser() throws Exception {
 		this.createEmployee("Bobby","password");
@@ -147,5 +153,29 @@ class EcommerceApplicationTests {
 		EcommerceProduct product = serviceTest.getProduct((long) 1);
 		assertEquals(product.getProduct(), "Soap");
 		assertEquals(product.getPrice(), "12.99");
+	}
+	@Test
+	public void removeFromCart() throws InvalidInputException {
+		EcommerceUser user = new EcommerceUser((long)1,"Boss", "password", new ArrayList<>());
+		EcommerceProduct product = new EcommerceProduct((long)1, "Brocolli", "15.00", 1);
+		serviceTest.postUser(user);
+		serviceTest.postProduct(product);
+		serviceTest.addToCart(user.getId(), product.getId());
+		serviceTest.addToCart(user.getId(), product.getId());
+		serviceTest.removeSingleFromCart(user.getId(), product.getId());
+		ArrayList<EcommerceProduct> e = new ArrayList();
+		e.add(product);
+		assertEquals(new EcommerceUser((long)1,"Boss", "password", e), serviceTest.removeSingleFromCart(user.getId(), product.getId()));
+		assertEquals( new EcommerceUser((long)1,"Boss", "password", new ArrayList<>()), serviceTest.removeFromCart(user.getId(), product.getId()));
+	}
+	@Test
+	public void purchase() throws UserNotFoundException, InvalidInputException {
+		EcommerceUser user = new EcommerceUser((long)1,"Boo", "password", new ArrayList<>());
+		EcommerceProduct product = new EcommerceProduct((long)1, "Banana", "15.00", 1);
+		serviceTest.postUser(user);
+		serviceTest.postProduct(product);
+		serviceTest.addToCart(user.getId(), product.getId());
+		serviceTest.addToCart(user.getId(), product.getId());
+		assertEquals(new EcommerceUser((long)1,"Boo", "password", new ArrayList<>()), serviceTest.purchase(user.getId()));
 	}
 }

@@ -19,7 +19,7 @@ public class EcommerceUser {
     private String username;
     @Column
     private String password;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<EcommerceProduct> products;
 
 }

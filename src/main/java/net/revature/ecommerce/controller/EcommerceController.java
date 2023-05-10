@@ -50,6 +50,18 @@ public class EcommerceController {
     EcommerceUser addToCart(@PathVariable long userId, @RequestBody EcommerceProduct product ) throws InvalidInputException{
         return ecommerceService.addToCart(userId, product.getId());
     }
+    @PostMapping("/checkout/{userId}")
+    EcommerceUser purchase(@PathVariable long userId ) throws UserNotFoundException {
+        return ecommerceService.purchase(userId);
+    }
+    @PatchMapping("/cart/{userId}")
+    EcommerceUser removeFromCart(@PathVariable long userId, @RequestBody EcommerceProduct product) throws InvalidInputException {
+        return ecommerceService.removeFromCart(userId, product.getId());
+    }
+    @PatchMapping("/cart/single/{userId}")
+    EcommerceUser removeSingleFromCart(@PathVariable long userId, @RequestBody EcommerceProduct product) throws InvalidInputException {
+        return ecommerceService.removeSingleFromCart(userId, product.getId());
+    }
 
 
 }

@@ -86,7 +86,20 @@ public class EcommerceService {
         if (user==null || product==null) {
             throw new InvalidInputException("Invalid input for User = " + user.toString() + "And product = " +product.toString());
         }
-        user.setProducts(user.getProducts().stream().filter(n -> n.getId()==productId).collect(Collectors.toList()));
+        user.setProducts(user.getProducts().stream().filter(n -> n.getId()!=productId).collect(Collectors.toList()));
+        return userRepo.save(user);
+    }
+    public EcommerceUser removeSingleFromCart(long userId, long productId) throws InvalidInputException {
+        EcommerceUser user = userRepo.findById(userId).orElse(null);
+        if (user == null)
+            throw new InvalidInputException("Invalid User");
+        user.setProducts(user.getProducts().stream().map(n -> {
+            if (n.getId() == productId) {
+                if (n.getQuantity() > 0)
+                    n.setQuantity(n.getQuantity()-1);
+            }
+            return n;
+        }).toList());
         return userRepo.save(user);
     }
     public EcommerceUser purchase(long userId) throws UserNotFoundException {

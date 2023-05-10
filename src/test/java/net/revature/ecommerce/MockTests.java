@@ -59,12 +59,18 @@ public class MockTests {
     @Test
     public  void AddToCart() throws InvalidInputException {
         given(service.addToCart((long)1, (long) 1)).willThrow(InvalidInputException.class);
-//        service.postProduct(product);
-//        service.postUser(user);
-//        ArrayList<EcommerceProduct> e = new ArrayList<>();
-//        e.add(product);
-//        EcommerceUser ans = service.addToCart((long)1, (long) 1);
-//        assertEquals(ans, new EcommerceUser((long)1, "Bob","password", e));
+    }
+    @Test
+    public void removeFromCart() throws InvalidInputException {
+        service.postUser(user);
+        service.postProduct(product);
+        System.out.println(service.getUser((long)1));
+        service.addToCart(user.getId(), product.getId());
+        service.addToCart(user.getId(), product.getId());
+        service.addToCart(user.getId(), product.getId());
+//        service.removeSingleFromCart(user.getId(), product.getId());
+        System.out.println(service.removeFromCart(user.getId(), product.getId()));
+
     }
 
 
