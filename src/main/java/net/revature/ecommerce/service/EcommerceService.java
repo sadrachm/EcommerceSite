@@ -1,5 +1,6 @@
 package net.revature.ecommerce.service;
 
+import net.revature.ecommerce.dao.CartRepo;
 import net.revature.ecommerce.dao.EcommerceDAOInterface;
 import net.revature.ecommerce.dao.ProductRepo;
 import net.revature.ecommerce.exceptions.EcommerceExceptionAdvice;
@@ -7,6 +8,7 @@ import net.revature.ecommerce.exceptions.InvalidInputException;
 import net.revature.ecommerce.exceptions.UserNotFoundException;
 import net.revature.ecommerce.model.EcommerceProduct;
 import net.revature.ecommerce.model.EcommerceUser;
+import net.revature.ecommerce.model.UserProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class EcommerceService {
     EcommerceDAOInterface userRepo;
     @Autowired
     ProductRepo productRepo;
+    @Autowired
+    CartRepo cartRepo;
 
     // Actions for User
     public List<EcommerceUser> getAllUsers() {
@@ -69,15 +73,24 @@ public class EcommerceService {
         EcommerceProduct product = productRepo.findById(productId).orElse(null);
         if (user == null || product == null)
             throw new InvalidInputException("Your product or user does not exist");
-        List<EcommerceProduct> products = user.getProducts();
-        for (EcommerceProduct prod : products) {
+        List<UserProduct> products = user.getProducts();
+        System.out.println(user);
+        for (UserProduct prod : products) {
             if (prod.getProduct().equals(product.getProduct())) {
                 prod.setQuantity(prod.getQuantity()+1);
+                cartRepo.save(prod);
+                System.out.println("Should be in here 2 times");
                 return userRepo.save(user);
             }
         }
-        product.setQuantity(1);
-        products.add(product);
+
+        System.out.println("Should be in here 1 times");
+        UserProduct userProduct = new UserProduct(product);
+        userProduct.setQuantity(1);
+        cartRepo.save(userProduct);
+
+        products.add(userProduct);
+        System.out.println(user);
         return userRepo.save(user);
     }
     public EcommerceUser removeFromCart(long userId, long productId) throws InvalidInputException{
@@ -93,13 +106,17 @@ public class EcommerceService {
         EcommerceUser user = userRepo.findById(userId).orElse(null);
         if (user == null)
             throw new InvalidInputException("Invalid User");
+
+        System.out.println(user);
         user.setProducts(user.getProducts().stream().map(n -> {
             if (n.getId() == productId) {
                 if (n.getQuantity() > 0)
                     n.setQuantity(n.getQuantity()-1);
             }
+            cartRepo.save(n);
             return n;
         }).toList());
+        System.out.println(user);
         return userRepo.save(user);
     }
     public EcommerceUser purchase(long userId) throws UserNotFoundException {

@@ -44,7 +44,7 @@ public class MockTests {
     @BeforeEach
     public void init() {
         user = new EcommerceUser((long)1,"Bob", "password", new ArrayList<>());
-        product = new EcommerceProduct((long)1, "Brocolli", "15.00", 1);
+        product = new EcommerceProduct((long)1, "Brocolli", "15.00");
     }
 
     @Test
