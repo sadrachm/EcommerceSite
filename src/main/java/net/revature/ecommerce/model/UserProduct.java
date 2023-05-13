@@ -19,6 +19,7 @@ public class UserProduct {
     private long productId;
     private String product;
     private String price;
+    private String imageLink;
     private Integer quantity;
 
     public UserProduct(EcommerceProduct product) {

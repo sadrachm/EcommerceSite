@@ -16,6 +16,7 @@ public class EcommerceProduct {
     private long id;
     private String product;
     private String price;
+    private String imageLink;
 
     public EcommerceProduct(EcommerceProduct product) {
         this.id = product.getId();
