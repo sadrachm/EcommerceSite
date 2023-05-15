@@ -120,32 +120,29 @@ public class EcommerceService {
         }).toList());
         return user;
     }
-//    public void deleteProduct(long id) {
-//        EcommerceProduct prod = productRepo.getById(id);
-//        List<EcommerceUser> users = userRepo.findAll();
-//        users.forEach(el -> {
-//            this.removeFromCart(el.getId(), id);
-//        });
-//    }
-//    public EcommerceUser addSingleToCart(long userId, long productId) throws InvalidInputException {
-//        EcommerceUser user = userRepo.findById(userId).orElse(null);
-//        if (user==null)
-//            throw new InvalidInputException("Invalid User");
-//        user.getProducts().stream().forEach(n -> {
-//            if (n.getId() == productId) {
-//                n.setQuantity(n.getQuantity()+1);
-//                cartRepo.save(n);
-//            }
-//        });
-//        return user;
-//    }
+    public void deleteProduct(long id) throws InvalidInputException {
+        EcommerceProduct prod = productRepo.findById(id).orElse(null);
+        List<EcommerceUser> users = userRepo.findAll();
+        users.forEach(el -> {
+            try {
+                this.removeFromCart(el.getId(), id);
+            } catch (InvalidInputException e) {
+            }
+        });
+        productRepo.deleteById(id);
+    }
     public EcommerceUser purchase(long userId) throws UserNotFoundException {
         EcommerceUser user = userRepo.findById(userId).orElse(null);
         if (user == null) {
             throw new UserNotFoundException("User not Found");
         }
+        List<UserProduct> tempVals = user.getProducts();
         user.setProducts(new ArrayList<>());
-        return userRepo.save(user);
+        userRepo.save(user);
+        tempVals.stream().forEach(n -> {
+            cartRepo.deleteById(n.getId());
+        });
+        return user;
     }
     public List<UserProduct> getUserProducts() {
         return cartRepo.findAll();
