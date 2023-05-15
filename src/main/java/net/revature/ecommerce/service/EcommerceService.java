@@ -12,6 +12,7 @@ import net.revature.ecommerce.model.UserProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,8 +94,17 @@ public class EcommerceService {
         if (user==null || product==null) {
             throw new InvalidInputException("Invalid input for User = " + user.toString() + "And product = " +product.toString());
         }
-        user.setProducts(user.getProducts().stream().filter(n -> n.getId()!=productId).collect(Collectors.toList()));
-        return userRepo.save(user);
+        ArrayList<Long> ids = new ArrayList<>();
+        user.setProducts(user.getProducts().stream().filter(n -> {
+            if (n.getProductId()==productId)
+                ids.add(n.getId());
+            return n.getProductId()!=productId;
+        }).collect(Collectors.toList()));
+        userRepo.save(user);
+        for (long el : ids) {
+            cartRepo.deleteById(el);
+        }
+        return user;
     }
     public EcommerceUser removeSingleFromCart(long userId, long productId) throws InvalidInputException {
         EcommerceUser user = userRepo.findById(userId).orElse(null);
@@ -110,6 +120,13 @@ public class EcommerceService {
         }).toList());
         return user;
     }
+//    public void deleteProduct(long id) {
+//        EcommerceProduct prod = productRepo.getById(id);
+//        List<EcommerceUser> users = userRepo.findAll();
+//        users.forEach(el -> {
+//            this.removeFromCart(el.getId(), id);
+//        });
+//    }
 //    public EcommerceUser addSingleToCart(long userId, long productId) throws InvalidInputException {
 //        EcommerceUser user = userRepo.findById(userId).orElse(null);
 //        if (user==null)
@@ -129,6 +146,9 @@ public class EcommerceService {
         }
         user.setProducts(new ArrayList<>());
         return userRepo.save(user);
+    }
+    public List<UserProduct> getUserProducts() {
+        return cartRepo.findAll();
     }
 
 }

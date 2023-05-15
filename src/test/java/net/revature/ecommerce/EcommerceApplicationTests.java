@@ -31,8 +31,7 @@ import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -170,8 +169,13 @@ class EcommerceApplicationTests {
 		asd.setProductId(1);
 		asd.setQuantity(3);
 		e.add(asd);
+		System.out.println(serviceTest.getUserProducts());
+		System.out.println(serviceTest.getAllProducts());
 		assertEquals(new EcommerceUser((long)1,"bob", "password", e), serviceTest.removeSingleFromCart(1, 1));
 		assertEquals( new EcommerceUser((long)1,"bob", "password", new ArrayList<>()), serviceTest.removeFromCart(1, 1));
+		System.out.println(serviceTest.getAllUsers());
+		System.out.println(serviceTest.getUserProducts());
+		System.out.println(serviceTest.getAllProducts());
 	}
 	@Test
 	public void purchase() throws UserNotFoundException, InvalidInputException {
@@ -183,4 +187,9 @@ class EcommerceApplicationTests {
 		serviceTest.addToCart(user.getId(), product.getId());
 		assertEquals(new EcommerceUser((long)1,"Boo", "password", new ArrayList<>()), serviceTest.purchase(user.getId()));
 	}
+//	@Test
+//	public void deleteProduct() {
+//		serviceTest.deleteProduct(1);
+//		assertEquals(serviceTest.getUser((long) 1), null);
+//	}
 }
