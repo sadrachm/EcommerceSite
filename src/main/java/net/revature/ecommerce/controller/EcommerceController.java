@@ -42,6 +42,12 @@ public class EcommerceController {
     EcommerceProduct postProduct(@RequestBody EcommerceProduct product) throws InvalidInputException {
         return ecommerceService.postProduct(product);
     }
+    @PostMapping("/products")
+    void postProducts(@RequestBody List<EcommerceProduct> products) throws InvalidInputException {
+        for (EcommerceProduct el : products) {
+            ecommerceService.postProduct(el);
+        }
+    }
     @GetMapping("/products")
     List<EcommerceProduct> getAllProducts() {
         return ecommerceService.getAllProducts();
@@ -62,6 +68,7 @@ public class EcommerceController {
     EcommerceUser removeSingleFromCart(@PathVariable long userId, @RequestBody EcommerceProduct product) throws InvalidInputException {
         return ecommerceService.removeSingleFromCart(userId, product.getId());
     }
+
 
 
 }

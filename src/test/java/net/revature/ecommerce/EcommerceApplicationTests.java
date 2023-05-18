@@ -109,7 +109,7 @@ class EcommerceApplicationTests {
 	void registerProduct() throws Exception {
 		mvc.perform(MockMvcRequestBuilders
 				.post("/product")
-				.content(asJsonString(new EcommerceProduct((long)1, "Shirt","12.99", "")))
+				.content(asJsonString(new EcommerceProduct((long)1, "Shirt","12.99", "", "")))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 //				.andDo(print())
@@ -126,7 +126,7 @@ class EcommerceApplicationTests {
 	void addToCart() throws Exception {
 		mvc.perform(MockMvcRequestBuilders
 				.post("/cart/1")
-				.content(asJsonString(new EcommerceProduct((long) 1, "", "","")))
+				.content(asJsonString(new EcommerceProduct((long) 1, "", "","", "")))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 //				.andDo(print())
@@ -179,6 +179,8 @@ class EcommerceApplicationTests {
 		asd.setId(1);
 		asd.setProductId(1);
 		asd.setQuantity(3);
+		asd.setDescription("");
+		asd.setImageLink("");
 		e.add(asd);
 		assertEquals(new EcommerceUser((long)1,"bob", "password", e), serviceTest.removeSingleFromCart(1, 1));
 		assertEquals( new EcommerceUser((long)1,"bob", "password", new ArrayList<>()), serviceTest.removeFromCart(1, 1));
@@ -188,7 +190,7 @@ class EcommerceApplicationTests {
 	@Order(8)
 	public void purchase() throws UserNotFoundException, InvalidInputException {
 		EcommerceUser user = new EcommerceUser((long)1,"Boo", "password", new ArrayList<>());
-		EcommerceProduct product = new EcommerceProduct((long)1, "Banana", "15.00", "");
+		EcommerceProduct product = new EcommerceProduct((long)1, "Banana", "15.00", "", "");
 		serviceTest.postUser(user);
 		serviceTest.postProduct(product);
 		serviceTest.addToCart(user.getId(), product.getId());
@@ -206,7 +208,7 @@ class EcommerceApplicationTests {
 		serviceTest.deleteProduct(1);
 		assertEquals(serviceTest.getProduct((long) 1), null);
 		ArrayList<UserProduct> e = new ArrayList<>();
-		e.add(new UserProduct(6, 2, "Soap", "12.99", null, 1));
+		e.add(new UserProduct(6, 2, "Soap", "12.99", null, 1, null));
 		assertEquals(serviceTest.getUserProducts(), e);
 	}
 	@Test

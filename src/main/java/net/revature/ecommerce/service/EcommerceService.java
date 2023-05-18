@@ -92,7 +92,7 @@ public class EcommerceService {
         EcommerceUser user = userRepo.findById(userId).orElse(null);
         EcommerceProduct product = productRepo.findById(productId).orElse(null);
         if (user==null || product==null) {
-            throw new InvalidInputException("Invalid input for User = " + user.toString() + "And product = " +product.toString());
+            throw new InvalidInputException("Invalid Input or Product");
         }
         ArrayList<Long> ids = new ArrayList<>();
         user.setProducts(user.getProducts().stream().filter(n -> {

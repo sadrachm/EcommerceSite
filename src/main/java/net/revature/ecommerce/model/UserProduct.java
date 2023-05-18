@@ -21,10 +21,13 @@ public class UserProduct {
     private String price;
     private String imageLink;
     private Integer quantity;
+    private String description;
 
     public UserProduct(EcommerceProduct product) {
         this.productId = product.getId();
         this.product = product.getProduct();
         this.price = product.getPrice();
+        this.imageLink = product.getImageLink();
+        this.description = product.getDescription();
     }
 }

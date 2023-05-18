@@ -17,10 +17,12 @@ public class EcommerceProduct {
     private String product;
     private String price;
     private String imageLink;
+    private String description;
 
     public EcommerceProduct(EcommerceProduct product) {
         this.id = product.getId();
         this.product = product.getProduct();
         this.price = product.getPrice();
+        this.description = product.getDescription();
     }
 }
